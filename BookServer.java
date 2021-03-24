@@ -15,30 +15,36 @@ public class BookServer {
     udpPort = 8000;
 
     // parse the inventory file
-    ArrayList<String> InventoryBook = new ArrayList<String>();
-    ArrayList<Integer> NumBook = new ArrayList<Integer>();
+    Inventory Inv = new Inventory();
+    Inv.parseInventory(fileName);
+    //TESTING
+/*    System.out.println(Inv.listAvailable());
+    System.out.println("\"The Letter\"");
+    System.out.println(Inv.borrowBook("Mike", "\"The Letter\""));
+    System.out.println(Inv.borrowBook("Mike", "\"Divergent\""));
+    System.out.println(Inv.listBorrowed("Mike"));
+    System.out.println(Inv.returnBook("1"));
+    System.out.println(Inv.listBorrowed("Mike"));*/
     
-    File file = new File(fileName);
-    Scanner sc = new Scanner(file);
-    while (sc.hasNextLine()) 
-    {
-    	String line = sc.nextLine();
-    	String name = line.substring(0, line.lastIndexOf("\"")+1);
-    	InventoryBook.add(name);
-    	String num = line.substring(line.lastIndexOf("\"")+2,line.length());
-    	NumBook.add(Integer.valueOf(num));
-    }
-    
-    
+   
     // TODO: handle request from clients
     //TCP
+    
     ServerSocket ss = new ServerSocket(tcpPort);
     while (true) {
-		Socket clientSocket = ss.accept();
-		//ClientHandler handler = new ClientHandler(this, clientSocket);
-		//Thread t = new Thread(handler);
-		//t.start();
-		System.out.println("got a connection");
+		ServerSocket listener = new ServerSocket(tcpPort);
+		Socket s;
+		Socket test = new Socket();
+		test.connect(null, udpPort);
+		while ( (s = listener.accept()) != null) {
+		//	Thread t = new ServerThread(ns.table, s);
+		//	t.start();
+		}
+		System.out.println("got a tcp connection");
+		
+	/*	DatagramSocket listenerU = new DatagramSocket(udpPort);
+		listenerU.
+		while( (u = listenerU))*/
 	}
     
     

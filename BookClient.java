@@ -81,14 +81,70 @@ public class BookClient {
           } else if (tokens[0].equals("return")) {
             // TODO: send appropriate command to the server and display the
             // appropriate responses form the server
+        	  if(Tmode) //TCP
+        	  {
+        		  out.println(tokens[0]+tokens[1]);
+        		  String reply="";
+				try {
+					reply = in.readLine();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+        		  System.out.println(reply); //OUTPUT FILE*******************************************
+        	  }
+        	  else { //UDP
+        		  
+        	  }
+        	  
           } else if (tokens[0].equals("inventory")) {
             // TODO: send appropriate command to the server and display the
             // appropriate responses form the server
+        	  if(Tmode)
+        	  {
+        		  out.println(tokens[0]+tokens[1]);
+        		  String reply="";
+				try {
+					reply = in.readLine();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+        		  System.out.println(reply); 
+        	  }
+        	  else {
+        		  
+        	  }
+        	  
           } else if (tokens[0].equals("list")) {
             // TODO: send appropriate command to the server and display the
             // appropriate responses form the server
+        	  if(Tmode)
+        	  {
+        		  out.println(tokens[0]+tokens[1]);
+        		  String reply="";
+				try {
+					reply = in.readLine();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+        		  System.out.println(reply); 
+        	  }
+        	  else {
+        		  
+        	  }
+        	  
           } else if (tokens[0].equals("exit")) {
             // TODO: send appropriate command to the server 
+        	  if(Tmode)
+        	  {
+        		  out.println(tokens[0]);
+        		  out.close();
+        		  in.close();
+        		  socket.close();
+        	  }
+        	  else {
+        		  
+        	  }
+        	  
           } else {
             System.out.println("ERROR: No such command");
           }
