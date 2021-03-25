@@ -1,3 +1,4 @@
+import java.net.InetAddress;
 import java.util.Scanner;
 import java.io.*;
 import java.net.DatagramPacket;
@@ -29,9 +30,10 @@ public class BookClient {
     BufferedReader in = null;
     FileWriter output = new FileWriter("out_1.txt");
     try {
+		InetAddress ia = InetAddress.getByName("localhost");
         Scanner sc = new Scanner(new FileReader(commandFile));
         byte[] buf = new byte[1024];
-        DatagramSocket UDPSocket = new DatagramSocket(udpPort);
+        DatagramSocket UDPSocket = new DatagramSocket();
         DatagramPacket dataPacket = new DatagramPacket(buf,buf.length);
         DatagramPacket sendPacket = new DatagramPacket(buf,buf.length);
         DatagramPacket recievePacket = new DatagramPacket(buf,buf.length);
@@ -82,14 +84,11 @@ public class BookClient {
 					in.close();
 					output.write("The communication mode is set to UDP");
 					buf = new byte[1024];
-					UDPSocket = new DatagramSocket(udpPort);
-					dataPacket = new DatagramPacket(buf,buf.length);
-					sendPacket = new DatagramPacket(buf,buf.length);
-					recievePacket = new DatagramPacket(buf,buf.length);
+					UDPSocket = new DatagramSocket();
 					//send message
 				    buf = command.getBytes();
-				    sendPacket = new DatagramPacket(buf,buf.length);
-				    UDPSocket.send(dataPacket);
+				    sendPacket = new DatagramPacket(buf,buf.length, ia, udpPort);
+				    UDPSocket.send(sendPacket);
 				    buf = new byte[buf.length];
 				    recievePacket = new DatagramPacket(buf,buf.length);
 				    UDPSocket.receive(recievePacket);
@@ -101,8 +100,8 @@ public class BookClient {
         	  }
         	  else{
 				  buf = command.getBytes();
-				  sendPacket = new DatagramPacket(buf,buf.length);
-				  UDPSocket.send(dataPacket);
+				  sendPacket = new DatagramPacket(buf,buf.length, ia, udpPort);
+				  UDPSocket.send(sendPacket);
 				  buf = new byte[buf.length];
 				  recievePacket = new DatagramPacket(buf,buf.length);
 				  UDPSocket.receive(recievePacket);
@@ -128,14 +127,14 @@ public class BookClient {
         	  }
         	  else {
         		  //EX HERE===================================================================================================
-        		  buf = command.getBytes();
-        		  sendPacket = new DatagramPacket(buf,buf.length);
-        		  UDPSocket.send(dataPacket);
-        		  buf = new byte[buf.length];
-        		  recievePacket = new DatagramPacket(buf,buf.length);
-        		  UDPSocket.receive(recievePacket);
-        		  String response = new String(recievePacket.getData(),0,recievePacket.getLength());
-        		  System.out.println(response);
+				  buf = command.getBytes();
+				  sendPacket = new DatagramPacket(buf,buf.length, ia, udpPort);
+				  UDPSocket.send(sendPacket);
+				  buf = new byte[buf.length];
+				  recievePacket = new DatagramPacket(buf,buf.length);
+				  UDPSocket.receive(recievePacket);
+				  String response = new String(recievePacket.getData(),0,recievePacket.getLength());
+				  System.out.println(response);
         	  }
         	  
           } else if (tokens[0].equals("return")) {
@@ -155,8 +154,8 @@ public class BookClient {
         	  }
         	  else { //UDP
 				  buf = command.getBytes();
-				  sendPacket = new DatagramPacket(buf,buf.length);
-				  UDPSocket.send(dataPacket);
+				  sendPacket = new DatagramPacket(buf,buf.length, ia, udpPort);
+				  UDPSocket.send(sendPacket);
 				  buf = new byte[buf.length];
 				  recievePacket = new DatagramPacket(buf,buf.length);
 				  UDPSocket.receive(recievePacket);
@@ -182,8 +181,8 @@ public class BookClient {
         	  }
         	  else {
 				  buf = command.getBytes();
-				  sendPacket = new DatagramPacket(buf,buf.length);
-				  UDPSocket.send(dataPacket);
+				  sendPacket = new DatagramPacket(buf,buf.length, ia, udpPort);
+				  UDPSocket.send(sendPacket);
 				  buf = new byte[buf.length];
 				  recievePacket = new DatagramPacket(buf,buf.length);
 				  UDPSocket.receive(recievePacket);
@@ -208,8 +207,8 @@ public class BookClient {
         	  }
         	  else {
 				  buf = command.getBytes();
-				  sendPacket = new DatagramPacket(buf,buf.length);
-				  UDPSocket.send(dataPacket);
+				  sendPacket = new DatagramPacket(buf,buf.length, ia, udpPort);
+				  UDPSocket.send(sendPacket);
 				  buf = new byte[buf.length];
 				  recievePacket = new DatagramPacket(buf,buf.length);
 				  UDPSocket.receive(recievePacket);
@@ -229,7 +228,7 @@ public class BookClient {
         	  }
         	  else {
 				  buf = command.getBytes();
-				  sendPacket = new DatagramPacket(buf,buf.length);
+				  sendPacket = new DatagramPacket(buf,buf.length, ia, udpPort);
 				  UDPSocket.send(dataPacket);
 				  UDPSocket.close();
         	  }

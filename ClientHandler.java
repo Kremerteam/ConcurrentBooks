@@ -1,4 +1,4 @@
-import java.io.IOException;
+import java.io.*;
 import java.net.*;
 
 public class ClientHandler extends Thread {
@@ -8,7 +8,9 @@ public class ClientHandler extends Thread {
 	private DatagramPacket dataPacket;
 	private String message;
 	ServerSocket TCPSocket;
-	
+	PrintStream out = null;
+	BufferedReader in = null;
+
 	public ClientHandler(Inventory Inv,DatagramSocket defaultSocket,DatagramPacket dataPacket,String buf) {
 		UDPSocket = defaultSocket;
 		this.Inv = Inv;
@@ -25,20 +27,35 @@ public class ClientHandler extends Thread {
 		{
 			if(TCP)
 			{
+
 				try {
-					TCPSocket.accept();
-					String message = "";
+					Socket socket = TCPSocket.accept();
+					//TCPSocket.accept();
+					in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+					out = new PrintStream(socket.getOutputStream());
+					String message = in.readLine();
 					String response = "error";
+					String[] messageArr = message.split("$");
+
 					if(message.substring(0, message.indexOf("$")).equals("setmode"))
 					{
 						String mode = message.substring(message.indexOf("$")+1);
 						if(mode.equals("T"))
 						{
 							response = "The communication mode is set to TCP";
+							out.println(response);
+							out.flush();
+
 							//TODO
 						}
 						else {
-							
+							socket.close();
+							TCPSocket.close();
+							UDPSocket = new DatagramSocket(8000);
+							response = "The communication mode is set to UDP";
+							out.println(response);
+							out.flush();
+
 						}
 					}
 					else if(message.substring(0, message.indexOf("$")).equals("borrow"))
