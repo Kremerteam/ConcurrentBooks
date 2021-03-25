@@ -47,13 +47,8 @@ public class BookClient {
             // TODO: set the mode of communication for sending commands to the server 
         	  if(tokens[1].equals("T")) {
 				  if (Tmode == true) {
-					  out.println(command);
-					  String reply="";
-					  try {
-						  reply = in.readLine();
-					  } catch (IOException e) {
-						  e.printStackTrace();
-					  }
+					  System.out.println(command);
+					  String reply=in.readLine();
 					  System.out.println(reply);
 				  }else{
 					  try {
@@ -63,14 +58,10 @@ public class BookClient {
 						  socket = new Socket(hostAddress, tcpPort);
 						  out = new PrintStream(socket.getOutputStream());
 						  in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-						  out.println(command);
+						  System.out.println(command);
 						  String reply="";
-						  try {
-							  reply = in.readLine();
-							  System.out.println(reply);
-						  } catch (IOException e) {
-							  e.printStackTrace();
-						  }
+						  reply = in.readLine();
+						  System.out.println(reply);
 					  } catch (Exception e) {
 						  e.printStackTrace();
 

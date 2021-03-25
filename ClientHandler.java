@@ -9,7 +9,7 @@ public class ClientHandler extends Thread {
 	private DatagramSocket UDPSocket;
 	private Inventory Inv;
 	private DatagramPacket dataPacket;
-	private String message;
+	private String buf;
 	private ServerSocket TCPSocket;
 	BufferedReader in;
 	PrintStream out;
@@ -18,12 +18,13 @@ public class ClientHandler extends Thread {
 		UDPSocket = defaultSocket;
 		this.Inv = Inv;
 		this.dataPacket = dataPacket;
-		this.message = buf;
+		this.buf = buf;
 	}
 
 	public void run() {
 		boolean quit = false;
 		boolean TCP = false;
+		boolean first = true;
 
 		while (!quit) {
 			if (TCP) {
@@ -89,11 +90,18 @@ public class ClientHandler extends Thread {
 				}
 			} else {
 				try {
-					UDPSocket.receive(dataPacket);
-					String message = new String(dataPacket.getData(), 0, dataPacket.getLength());
+					String message="";
+					if(!first) {
+						UDPSocket.receive(dataPacket);
+						message = new String(dataPacket.getData(), 0, dataPacket.getLength());
+					}
+					else {
+						first=false;
+						message=buf;
+					}
+			//		String message = new String(dataPacket.getData(), 0, dataPacket.getLength());
 					System.out.println(message);
 					String response = "error";
-
 					if (message.substring(0, message.indexOf("$")).equals("setmode")) {
 						String mode = message.substring(message.indexOf("$") + 1);
 						if (mode.equals("T")) {
