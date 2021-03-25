@@ -31,7 +31,7 @@ public class BookClient {
     try {
         Scanner sc = new Scanner(new FileReader(commandFile));
         byte[] buf = new byte[1024];
-        DatagramSocket UDPSocket = new DatagramSocket(udpPort);
+        DatagramSocket UDPSocket = new DatagramSocket();
         DatagramPacket dataPacket = new DatagramPacket(buf,buf.length);
         DatagramPacket sendPacket = new DatagramPacket(buf,buf.length);
         DatagramPacket recievePacket = new DatagramPacket(buf,buf.length);
@@ -58,7 +58,7 @@ public class BookClient {
 						  Tmode = true;
 						  //output.write("The communication mode is set to TCP");
 						  UDPSocket.close();
-						  socket = new Socket(hostAddress, 7000);
+						  socket = new Socket(hostAddress, tcpPort);
 						  out = new PrintStream(socket.getOutputStream());
 						  in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 						  out.println(command);
@@ -117,7 +117,8 @@ public class BookClient {
         	  String command = tokens[0]+'$'+tokens[1]+'$'+tokens[2];
         	  if(Tmode)
         	  {
-        		  out.println(command);
+        		  System.out.println(command);
+        		//  out.println(command);
         		  String reply="";
 				try {
 					reply = in.readLine();
