@@ -101,14 +101,15 @@ public class ClientHandler extends Thread {
 						byte[] buf = new byte[2048];
 						dataPacket = new DatagramPacket(buf, buf.length);
 						UDPSocket.receive(dataPacket);
-						message = new String(dataPacket.getData(), 0, dataPacket.getLength());
+						//message = new String(dataPacket.getData(), 0, dataPacket.getLength());
+						message =new  String(buf).trim();
 					}
 					else {
 						first=false;
 						message=buffer;
 					}
 			//		String message = new String(dataPacket.getData(), 0, dataPacket.getLength());
-					System.out.println(message);
+					System.out.println("In server"+message);
 					String response = "error";
 					if (message.substring(0, message.indexOf("$")).equals("setmode")) {
 						String mode = message.substring(message.indexOf("$") + 1);
@@ -133,7 +134,6 @@ public class ClientHandler extends Thread {
 					} else if (message.substring(0, message.indexOf("$")).equals("borrow")) {
 						String name = message.substring(message.indexOf("$")+1, message.lastIndexOf("$"));
 						String book = message.substring(message.lastIndexOf("$")+1);
-						System.out.println(book);
 						response = Inv.borrowBook(name, book);
 						byte[] buf = response.getBytes();
 						System.out.println("response:"+ response);
@@ -150,6 +150,7 @@ public class ClientHandler extends Thread {
 					else if (message.substring(0, message.indexOf("$")).equals("list"))
 					{
 						String name = message.substring(message.indexOf("$")+1,message.length());
+						System.out.println(name);
 						response = Inv.listBorrowed(name);
 						byte[] buf = response.getBytes();
 						DatagramPacket sendPacket = new DatagramPacket(buf,buf.length, dataPacket.getAddress(), dataPacket.getPort());
