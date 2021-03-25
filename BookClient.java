@@ -1,5 +1,7 @@
 import java.util.Scanner;
 import java.io.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.Socket;
 import java.util.*;
 public class BookClient {
@@ -28,6 +30,11 @@ public class BookClient {
     FileWriter output = new FileWriter("out_1.txt");
     try {
         Scanner sc = new Scanner(new FileReader(commandFile));
+        byte[] buf = new byte[1024];
+        DatagramSocket UDPSocket = new DatagramSocket(udpPort);
+        DatagramPacket dataPacket = new DatagramPacket(buf,buf.length);
+        DatagramPacket sendPacket = new DatagramPacket(buf,buf.length);
+        DatagramPacket recievePacket = new DatagramPacket(buf,buf.length);
         
         while(sc.hasNextLine()) {
           String cmd = sc.nextLine();
@@ -63,9 +70,10 @@ public class BookClient {
           else if (tokens[0].equals("borrow")) {
             // TODO: send appropriate command to the server and display the
             // appropriate responses form the server
+        	  String command = tokens[0]+tokens[1]+tokens[2];
         	  if(Tmode)
         	  {
-        		  out.println(tokens[0]+tokens[1]+tokens[2]);
+        		  out.println(command);
         		  String reply="";
 				try {
 					reply = in.readLine();
@@ -75,7 +83,15 @@ public class BookClient {
         		  System.out.println(reply); 
         	  }
         	  else {
-        		  
+        		  //EX HERE===================================================================================================
+        		  buf = command.getBytes();
+        		  sendPacket = new DatagramPacket(buf,buf.length);
+        		  UDPSocket.send(dataPacket);
+        		  buf = new byte[buf.length];
+        		  recievePacket = new DatagramPacket(buf,buf.length);
+        		  UDPSocket.receive(recievePacket);
+        		  String response = new String(recievePacket.getData(),0,recievePacket.getLength());
+        		  System.out.println(response);
         	  }
         	  
           } else if (tokens[0].equals("return")) {
@@ -93,6 +109,7 @@ public class BookClient {
         		  System.out.println(reply); //OUTPUT FILE*******************************************
         	  }
         	  else { //UDP
+        		  UDPSocket.send(null);
         		  
         	  }
         	  
