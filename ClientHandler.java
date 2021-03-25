@@ -16,12 +16,14 @@ public class ClientHandler extends Thread {
 	BufferedReader in;
 	PrintStream out;
 	int udpPort=8000;
+	Socket socket;
 	FileWriter invOutput;
-	public ClientHandler(Inventory Inv, DatagramSocket defaultSocket, DatagramPacket dataPacket, String buf) {
+	public ClientHandler(Inventory Inv, DatagramSocket defaultSocket, DatagramPacket dataPacket, String buf,ServerSocket TCPSocket) {
 		UDPSocket = defaultSocket;
 		this.Inv = Inv;
 		this.dataPacket = dataPacket;
 		this.buffer = buf;
+		this.TCPSocket = TCPSocket;
 	}
 
 	public void run() {
@@ -38,7 +40,7 @@ public class ClientHandler extends Thread {
 			}
 			if (TCP) {
 				try {
-					Socket socket = TCPSocket.accept();
+					//socket = TCPSocket.accept();
 					in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 					out = new PrintStream(socket.getOutputStream());
 					String message = in.readLine();
@@ -49,7 +51,7 @@ public class ClientHandler extends Thread {
 							response = "The communication mode is set to TCP";
 							out.println(response);
 							out.flush();
-							// TODO
+							TCP=true;
 						} else {
 							response = "The communication mode is set to UDP";
 							out.println(response);
@@ -123,11 +125,12 @@ public class ClientHandler extends Thread {
 							response = "The communication mode is set to TCP";
 							byte[] buf = response.getBytes();
 							buf = new byte[1024];
-							dataPacket = new DatagramPacket(buf, buf.length);
-							DatagramPacket sendPacket = new DatagramPacket(buf, buf.length, ia, udpPort);
+							//dataPacket = new DatagramPacket(buf, buf.length);
+							DatagramPacket sendPacket = new DatagramPacket(buf, buf.length, dataPacket.getAddress(), dataPacket.getPort());
 							UDPSocket.send(sendPacket);
-							UDPSocket.close();
-							TCPSocket = new ServerSocket(7000);
+							//UDPSocket.close();
+							//TCPSocket = new ServerSocket(7000);
+							socket = TCPSocket.accept();
 							TCP = true;
 						} else {
 							response = "The communication mode is set to UDP";

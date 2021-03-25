@@ -30,7 +30,7 @@ public class BookClient {
 		PrintStream out = null;
 		BufferedReader in = null;
 		FileWriter output = new FileWriter("out_"+clientId+".txt");
-		FileWriter invOutput = new FileWriter("inventory.txt");
+
 		int recieveSize = 4096;
 		
 		try {
@@ -52,20 +52,30 @@ public class BookClient {
 					if (tokens[1].equals("T")) {
 						if (Tmode == true) {
 							//TODO
-							System.out.println(command);
+							out.println(command);
+							out.flush();
 							String reply = in.readLine();
 							System.out.println(reply);
 						} else {
 							try {
 								Tmode = true;
-								UDPSocket.close();
+								buf = command.getBytes();
+								sendPacket = new DatagramPacket(buf, buf.length, ia, udpPort);
+								UDPSocket.send(sendPacket);
+								buf = new byte[recieveSize];
+								recievePacket = new DatagramPacket(buf, buf.length);
+								UDPSocket.receive(recievePacket);
+								String response = new String(recievePacket.getData(), 0, recievePacket.getLength());
+								System.out.println(response);
+								output.write(response+"\n");
+								//UDPSocket.close();
 								socket = new Socket(hostAddress, tcpPort);
 								out = new PrintStream(socket.getOutputStream());
 								in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-								System.out.println(command);
-								String reply = "";
-								reply = in.readLine();
-								System.out.println(reply);
+							//	System.out.println(command);
+							//	String reply = "";
+							//	reply = in.readLine();
+							//	System.out.println(reply);
 							} catch (Exception e) {
 								e.printStackTrace();
 
@@ -119,7 +129,8 @@ public class BookClient {
 
 					if (Tmode) {
 						System.out.println(command);
-						// out.println(command);
+						 out.println(command);
+						 out.flush();
 						String reply = "";
 						try {
 							reply = in.readLine();
@@ -148,6 +159,7 @@ public class BookClient {
 					if (Tmode) // TCP
 					{
 						out.println(command);
+						out.flush();
 						String reply = "";
 						try {
 							reply = in.readLine();
@@ -174,9 +186,11 @@ public class BookClient {
 					String command = tokens[0] + "$";
 					if (Tmode) {
 						out.println(command);
+						out.flush();
 						String reply = "";
 						try {
-							reply = in.readLine();
+							reply =in.readLine();
+						    
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
@@ -200,6 +214,7 @@ public class BookClient {
 					String command = tokens[0] + '$' + tokens[1];
 					if (Tmode) {
 						out.println(command);
+						out.flush();
 						String reply = "";
 						try {
 							reply = in.readLine();
@@ -221,10 +236,11 @@ public class BookClient {
 					}
 
 				} else if (tokens[0].equals("exit")) {
-					// TODO: send appropriate command to the server
+					// DONE!
 					String command = tokens[0] + "$";
 					if (Tmode) {
 						out.println(command);
+						out.flush();	
 						out.close();
 						in.close();
 						socket.close();
@@ -233,11 +249,6 @@ public class BookClient {
 						buf = command.getBytes();
 						sendPacket = new DatagramPacket(buf, buf.length, ia, udpPort);
 						UDPSocket.send(sendPacket);
-		/*				buf = new byte[recieveSize];
-						recievePacket = new DatagramPacket(buf, buf.length);
-						UDPSocket.receive(recievePacket);
-						String response = new String(recievePacket.getData(), 0, recievePacket.getLength());
-						invOutput.write(response);*/
 						UDPSocket.close();
 					}
 
@@ -249,6 +260,5 @@ public class BookClient {
 			e.printStackTrace();
 		}
 		output.close();
-		invOutput.close();
 	}
 }

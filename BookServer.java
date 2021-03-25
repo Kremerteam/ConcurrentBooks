@@ -3,6 +3,7 @@ import java.net.*;
 import java.util.*;
 
 public class BookServer {
+	
   public static void main (String[] args) throws IOException {
     int tcpPort;
     int udpPort;
@@ -13,7 +14,6 @@ public class BookServer {
     String fileName = args[0];
     tcpPort = 7000;
     udpPort = 8000;
-
     // parse the inventory file
 //    Inventory Inv = new Inventory();
 //    Inv.parseInventory(fileName);
@@ -34,8 +34,8 @@ public class BookServer {
   //  byte[] buf = new byte[2048];
     Inventory Inv = new Inventory();
     Inv.parseInventory(fileName);
-    System.out.println(Inv.NumBook);
     DatagramSocket defaultSocket = new DatagramSocket(udpPort);
+    ServerSocket TCPSocket = new ServerSocket(7000);
     while (true) {
 	/*	ServerSocket listener = new ServerSocket(tcpPort);
 		Socket s;
@@ -51,7 +51,7 @@ public class BookServer {
 		DatagramPacket dataPacket = new DatagramPacket(buf,buf.length);
 		defaultSocket.receive(dataPacket);
 		String buffer = new String(buf).trim();
-		Thread t = new ClientHandler(Inv,defaultSocket,dataPacket,buffer);
+		Thread t = new ClientHandler(Inv,defaultSocket,dataPacket,buffer,TCPSocket);
 		t.start();
 	}
     
