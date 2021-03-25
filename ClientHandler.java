@@ -1,4 +1,4 @@
-import java.io.*;
+import java.io.IOException;
 import java.net.*;
 
 public class ClientHandler extends Thread {
@@ -7,6 +7,9 @@ public class ClientHandler extends Thread {
 	private Inventory Inv;
 	private DatagramPacket dataPacket;
 	private String message;
+	private ServerSocket TCPSocket;
+
+	public ClientHandler(Inventory Inv, DatagramSocket defaultSocket, DatagramPacket dataPacket, String buf) {
 	ServerSocket TCPSocket;
 	PrintStream out = null;
 	BufferedReader in = null;
@@ -27,7 +30,6 @@ public class ClientHandler extends Thread {
 		{
 			if(TCP)
 			{
-
 				try {
 					Socket socket = TCPSocket.accept();
 					//TCPSocket.accept();
@@ -35,27 +37,16 @@ public class ClientHandler extends Thread {
 					out = new PrintStream(socket.getOutputStream());
 					String message = in.readLine();
 					String response = "error";
-					String[] messageArr = message.split("$");
-
 					if(message.substring(0, message.indexOf("$")).equals("setmode"))
 					{
 						String mode = message.substring(message.indexOf("$")+1);
 						if(mode.equals("T"))
 						{
 							response = "The communication mode is set to TCP";
-							out.println(response);
-							out.flush();
-
 							//TODO
 						}
 						else {
-							socket.close();
-							TCPSocket.close();
-							UDPSocket = new DatagramSocket(8000);
-							response = "The communication mode is set to UDP";
-							out.println(response);
-							out.flush();
-
+							
 						}
 					}
 					else if(message.substring(0, message.indexOf("$")).equals("borrow"))
@@ -72,30 +63,37 @@ public class ClientHandler extends Thread {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-			}
-			else
-			{
+			} else {
 				try {
 					UDPSocket.receive(dataPacket);
-					String message = new String(dataPacket.getData(),0,dataPacket.getLength());				
+					String message = new String(dataPacket.getData(), 0, dataPacket.getLength());
 					System.out.println(message);
-					String response="error";
-					
-					if(message.substring(0, message.indexOf("$")).equals("setmode"))
-					{
-						String mode = message.substring(message.indexOf("$")+1);
-						if(mode.equals("T"))
-						{
+					String response = "error";
+
+					if (message.substring(0, message.indexOf("$")).equals("setmode")) {
+						String mode = message.substring(message.indexOf("$") + 1);
+						if (mode.equals("T")) {
 							response = "The communication mode is set to TCP";
-							
+							byte[] buf = response.getBytes();
+							DatagramPacket sendPacket = new DatagramPacket(buf, buf.length);
+							UDPSocket.send(sendPacket);
 							UDPSocket.close();
 							TCPSocket = new ServerSocket(7000);
-							TCP=true;
-						}
-						else {
+							TCP = true;
+						} else {
 							response = "The communication mode is set to UDP";
-							
+							byte[] buf = response.getBytes();
+							DatagramPacket sendPacket = new DatagramPacket(buf, buf.length);
+							UDPSocket.send(sendPacket);
+							TCP=false;
 						}
+					} else if (message.substring(0, message.indexOf("$")).equals("borrow")) {
+						String name = message.substring(message.indexOf("$")+1, message.lastIndexOf("$"));
+						String book = message.substring(message.lastIndexOf("$")+1);
+						response = Inv.borrowBook(name, book);
+						byte[] buf = response.getBytes();
+						DatagramPacket sendPacket = new DatagramPacket(buf, buf.length);
+						UDPSocket.send(sendPacket);
 					}
 					else if(message.substring(0, message.indexOf("$")).equals("borrow"))
 						System.out.println(message);
