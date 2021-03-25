@@ -133,6 +133,7 @@ public class ClientHandler extends Thread {
 					} else if (message.substring(0, message.indexOf("$")).equals("borrow")) {
 						String name = message.substring(message.indexOf("$")+1, message.lastIndexOf("$"));
 						String book = message.substring(message.lastIndexOf("$")+1);
+						System.out.println(book);
 						response = Inv.borrowBook(name, book);
 						byte[] buf = response.getBytes();
 						System.out.println("response:"+ response);
@@ -148,7 +149,7 @@ public class ClientHandler extends Thread {
 					}
 					else if (message.substring(0, message.indexOf("$")).equals("list"))
 					{
-						String name = message.substring(message.indexOf("$")+1);
+						String name = message.substring(message.indexOf("$")+1,message.length());
 						response = Inv.listBorrowed(name);
 						byte[] buf = response.getBytes();
 						DatagramPacket sendPacket = new DatagramPacket(buf,buf.length, dataPacket.getAddress(), dataPacket.getPort());

@@ -53,6 +53,7 @@ public class BookClient {
 				  }else{
 					  try {
 						  Tmode = true;
+
 						  //output.write("The communication mode is set to TCP");
 						  UDPSocket.close();
 						  socket = new Socket(hostAddress, tcpPort);
@@ -104,7 +105,18 @@ public class BookClient {
           else if (tokens[0].equals("borrow")) {
             // TODO: send appropriate command to the server and display the
             // appropriate responses form the server
-        	  String command = tokens[0]+'$'+tokens[1]+'$'+tokens[2]+ " " +tokens[3];
+        //	  String command = tokens[0]+'$'+tokens[1]+'$'+tokens[2]+ " " +tokens[3];
+        	  String command = "";
+        	  for(int i=0;i<tokens.length;i++)
+        	  {
+        		  if(i<2)
+        			  command+=tokens[i]+'$';
+        		  else if(i!=tokens.length-1)
+        			  command+=tokens[i]+" ";
+        		  else
+        			  command+=tokens[i];
+        	  }
+        	  System.out.println(command);
         	  if(Tmode)
         	  {
         		  System.out.println(command);
