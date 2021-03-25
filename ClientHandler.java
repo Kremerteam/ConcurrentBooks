@@ -1,3 +1,4 @@
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,7 +9,7 @@ public class ClientHandler extends Thread {
 
 	private DatagramSocket UDPSocket;
 	private Inventory Inv;
-	private DatagramPacket dataPacket;
+	DatagramPacket dataPacket;
 	private String buffer;
 	private ServerSocket TCPSocket;
 	BufferedReader in;
@@ -90,10 +91,15 @@ public class ClientHandler extends Thread {
 					e.printStackTrace();
 				}
 			} else {
+
 				try {
 					InetAddress ia = InetAddress.getByName("localhost");
 					String message="";
+
+
 					if(!first) {
+						byte[] buf = new byte[2048];
+						dataPacket = new DatagramPacket(buf, buf.length);
 						UDPSocket.receive(dataPacket);
 						message = new String(dataPacket.getData(), 0, dataPacket.getLength());
 					}
@@ -109,7 +115,9 @@ public class ClientHandler extends Thread {
 						if (mode.equals("T")) {
 							response = "The communication mode is set to TCP";
 							byte[] buf = response.getBytes();
-							DatagramPacket sendPacket = new DatagramPacket(buf, buf.length);
+							buf = new byte[1024];
+							dataPacket = new DatagramPacket(buf, buf.length);
+							DatagramPacket sendPacket = new DatagramPacket(buf, buf.length, ia, udpPort);
 							UDPSocket.send(sendPacket);
 							UDPSocket.close();
 							TCPSocket = new ServerSocket(7000);
@@ -117,7 +125,8 @@ public class ClientHandler extends Thread {
 						} else {
 							response = "The communication mode is set to UDP";
 							byte[] buf = response.getBytes();
-							DatagramPacket sendPacket = new DatagramPacket(buf, buf.length, ia, udpPort);
+							System.out.println("Port"+dataPacket.getPort());
+							DatagramPacket sendPacket = new DatagramPacket(buf,buf.length, dataPacket.getAddress(), dataPacket.getPort());
 							UDPSocket.send(sendPacket);
 							TCP=false;
 						}
@@ -126,14 +135,15 @@ public class ClientHandler extends Thread {
 						String book = message.substring(message.lastIndexOf("$")+1);
 						response = Inv.borrowBook(name, book);
 						byte[] buf = response.getBytes();
-						DatagramPacket sendPacket = new DatagramPacket(buf, buf.length);
+						System.out.println("response:"+ response);
+						DatagramPacket sendPacket = new DatagramPacket(buf,buf.length, dataPacket.getAddress(), dataPacket.getPort());
 						UDPSocket.send(sendPacket);
 					}
 					else if (message.substring(0, message.indexOf("$")).equals("return")) {
 						String id = message.substring(message.indexOf("$")+1);
 						response = Inv.returnBook(id);
 						byte[] buf = response.getBytes();
-						DatagramPacket sendPacket = new DatagramPacket(buf, buf.length);
+						DatagramPacket sendPacket = new DatagramPacket(buf,buf.length, dataPacket.getAddress(), dataPacket.getPort());
 						UDPSocket.send(sendPacket);
 					}
 					else if (message.substring(0, message.indexOf("$")).equals("list"))
@@ -141,14 +151,14 @@ public class ClientHandler extends Thread {
 						String name = message.substring(message.indexOf("$")+1);
 						response = Inv.listBorrowed(name);
 						byte[] buf = response.getBytes();
-						DatagramPacket sendPacket = new DatagramPacket(buf, buf.length);
+						DatagramPacket sendPacket = new DatagramPacket(buf,buf.length, dataPacket.getAddress(), dataPacket.getPort());
 						UDPSocket.send(sendPacket);
 					}
 					else if (message.substring(0, message.indexOf("$")).equals("exit"))
 					{
 						response = Inv.listAvailable();
 						byte[] buf = response.getBytes();
-						DatagramPacket sendPacket = new DatagramPacket(buf, buf.length);
+						DatagramPacket sendPacket = new DatagramPacket(buf,buf.length, dataPacket.getAddress(), dataPacket.getPort());
 						UDPSocket.send(sendPacket);
 						quit=true;
 					}
@@ -156,7 +166,7 @@ public class ClientHandler extends Thread {
 					{
 						response = Inv.listAvailable();
 						byte[] buf = response.getBytes();
-						DatagramPacket sendPacket = new DatagramPacket(buf, buf.length);
+						DatagramPacket sendPacket = new DatagramPacket(buf,buf.length, dataPacket.getAddress(), dataPacket.getPort());
 						UDPSocket.send(sendPacket);
 					}
 				} catch (IOException e) {

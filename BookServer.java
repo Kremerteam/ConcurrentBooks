@@ -31,9 +31,8 @@ public class BookServer {
     //TCP
     
    // ServerSocket ss = new ServerSocket(tcpPort);
-	byte[] buf = new byte[1024];
-	DatagramSocket defaultSocket = new DatagramSocket(udpPort);
-	DatagramPacket dataPacket = new DatagramPacket(buf,buf.length);
+    byte[] buf = new byte[2048];
+    DatagramSocket defaultSocket = new DatagramSocket(udpPort);
     while (true) {
 	/*	ServerSocket listener = new ServerSocket(tcpPort);
 		Socket s;
@@ -45,9 +44,8 @@ public class BookServer {
 		}
 		System.out.println("got a tcp connection");
 	*/	
-    /*	byte[] buf = new byte[1024];
-		DatagramSocket defaultSocket = new DatagramSocket(udpPort);
-		DatagramPacket dataPacket = new DatagramPacket(buf,buf.length);*/
+
+		DatagramPacket dataPacket = new DatagramPacket(buf,buf.length);
 		defaultSocket.receive(dataPacket);
 		String buffer = new String(buf).trim();
 		Thread t = new ClientHandler(Inv,defaultSocket,dataPacket,buffer);
