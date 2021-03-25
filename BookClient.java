@@ -197,7 +197,7 @@ public class BookClient {
 			  String command = tokens[0]+'$'+tokens[1];
         	  if(Tmode)
         	  {
-        		  out.println(tokens[0]+tokens[1]);
+        		  out.println(command);
         		  String reply="";
 				try {
 					reply = in.readLine();
