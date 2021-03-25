@@ -73,27 +73,31 @@ public class ClientHandler extends Thread {
 							TCP=false;
 						}
 					} else if (message.substring(0, message.indexOf("$")).equals("borrow")) {
-						response = "";
+						String name = message.substring(message.indexOf("$")+1, message.lastIndexOf("$"));
+						String book = message.substring(message.lastIndexOf("$")+1);
+						response = Inv.borrowBook(name, book);
 						byte[] buf = response.getBytes();
 						DatagramPacket sendPacket = new DatagramPacket(buf, buf.length);
 						UDPSocket.send(sendPacket);
 					}
 					else if (message.substring(0, message.indexOf("$")).equals("return")) {
-						response = "";
+						String id = message.substring(message.indexOf("$")+1);
+						response = Inv.returnBook(id);
 						byte[] buf = response.getBytes();
 						DatagramPacket sendPacket = new DatagramPacket(buf, buf.length);
 						UDPSocket.send(sendPacket);
 					}
 					else if (message.substring(0, message.indexOf("$")).equals("list"))
 					{
-						response = "";
+						String name = message.substring(message.indexOf("$")+1);
+						response = Inv.listBorrowed(name);
 						byte[] buf = response.getBytes();
 						DatagramPacket sendPacket = new DatagramPacket(buf, buf.length);
 						UDPSocket.send(sendPacket);
 					}
 					else if (message.substring(0, message.indexOf("$")).equals("exit"))
 					{
-						response = "";
+						response = Inv.listAvailable();
 						byte[] buf = response.getBytes();
 						DatagramPacket sendPacket = new DatagramPacket(buf, buf.length);
 						UDPSocket.send(sendPacket);
@@ -101,7 +105,7 @@ public class ClientHandler extends Thread {
 					}
 					else if (message.substring(0, message.indexOf("$")).equals("inventory"))
 					{
-						response = "";
+						response = Inv.listAvailable();
 						byte[] buf = response.getBytes();
 						DatagramPacket sendPacket = new DatagramPacket(buf, buf.length);
 						UDPSocket.send(sendPacket);
