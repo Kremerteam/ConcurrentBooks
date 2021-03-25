@@ -30,9 +30,9 @@ public class BookServer {
     // TODO: handle request from clients
     //TCP
     
-    ServerSocket ss = new ServerSocket(tcpPort);
+   // ServerSocket ss = new ServerSocket(tcpPort);
     while (true) {
-		ServerSocket listener = new ServerSocket(tcpPort);
+	/*	ServerSocket listener = new ServerSocket(tcpPort);
 		Socket s;
 		Socket test = new Socket();
 		test.connect(null, udpPort);
@@ -41,10 +41,14 @@ public class BookServer {
 		//	t.start();
 		}
 		System.out.println("got a tcp connection");
-		
-	/*	DatagramSocket listenerU = new DatagramSocket(udpPort);
-		listenerU.
-		while( (u = listenerU))*/
+	*/	
+    	byte[] buf = new byte[1024];
+		DatagramSocket defaultSocket = new DatagramSocket(udpPort);
+		DatagramPacket dataPacket = new DatagramPacket(buf,buf.length);
+		defaultSocket.receive(dataPacket);
+		String buffer = new String(buf).trim();
+		Thread t = new ClientHandler(Inv,defaultSocket,dataPacket,buffer);
+		t.start();
 	}
     
     

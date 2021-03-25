@@ -38,7 +38,7 @@ public class BookClient {
         	  if(tokens[1].equals("T")) {
         		  try {
         			  Tmode=true;
-        			  output.write("The communication mode is set to TCP");
+        			 // output.write("The communication mode is set to TCP");
         			  socket = new Socket(hostAddress,7000);
         			  out = new PrintStream(socket.getOutputStream());
         			  in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
