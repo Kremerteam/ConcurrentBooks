@@ -1,4 +1,7 @@
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.*;
 
 public class ClientHandler extends Thread {
@@ -9,8 +12,6 @@ public class ClientHandler extends Thread {
 	private String message;
 	private ServerSocket TCPSocket;
 
-	public ClientHandler(Inventory Inv, DatagramSocket defaultSocket, DatagramPacket dataPacket, String buf) {
-	ServerSocket TCPSocket;
 	PrintStream out = null;
 	BufferedReader in = null;
 
