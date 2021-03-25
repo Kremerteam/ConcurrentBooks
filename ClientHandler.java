@@ -3,33 +3,34 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.*;
-
+import java.net.InetAddress;
 public class ClientHandler extends Thread {
 
 	private DatagramSocket UDPSocket;
 	private Inventory Inv;
 	private DatagramPacket dataPacket;
-	private String buf;
+	private String buffer;
 	private ServerSocket TCPSocket;
 	BufferedReader in;
 	PrintStream out;
+	int udpPort=8000;
 
+	
 	public ClientHandler(Inventory Inv, DatagramSocket defaultSocket, DatagramPacket dataPacket, String buf) {
 		UDPSocket = defaultSocket;
 		this.Inv = Inv;
 		this.dataPacket = dataPacket;
-		this.buf = buf;
+		this.buffer = buf;
 	}
 
 	public void run() {
 		boolean quit = false;
 		boolean TCP = false;
 		boolean first = true;
-
+		
 		while (!quit) {
 			if (TCP) {
 				try {
-
 					Socket socket = TCPSocket.accept();
 					in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 					out = new PrintStream(socket.getOutputStream());
@@ -90,6 +91,7 @@ public class ClientHandler extends Thread {
 				}
 			} else {
 				try {
+					InetAddress ia = InetAddress.getByName("localhost");
 					String message="";
 					if(!first) {
 						UDPSocket.receive(dataPacket);
@@ -97,7 +99,7 @@ public class ClientHandler extends Thread {
 					}
 					else {
 						first=false;
-						message=buf;
+						message=buffer;
 					}
 			//		String message = new String(dataPacket.getData(), 0, dataPacket.getLength());
 					System.out.println(message);
@@ -115,7 +117,7 @@ public class ClientHandler extends Thread {
 						} else {
 							response = "The communication mode is set to UDP";
 							byte[] buf = response.getBytes();
-							DatagramPacket sendPacket = new DatagramPacket(buf, buf.length);
+							DatagramPacket sendPacket = new DatagramPacket(buf, buf.length, ia, udpPort);
 							UDPSocket.send(sendPacket);
 							TCP=false;
 						}
