@@ -1,50 +1,66 @@
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.*;
 
 public class ClientHandler extends Thread {
-
+	
 	private DatagramSocket UDPSocket;
 	private Inventory Inv;
 	private DatagramPacket dataPacket;
 	private String message;
 	private ServerSocket TCPSocket;
 
-	public ClientHandler(Inventory Inv, DatagramSocket defaultSocket, DatagramPacket dataPacket, String buf) {
+	PrintStream out = null;
+	BufferedReader in = null;
+
+	public ClientHandler(Inventory Inv,DatagramSocket defaultSocket,DatagramPacket dataPacket,String buf) {
 		UDPSocket = defaultSocket;
 		this.Inv = Inv;
 		this.dataPacket = dataPacket;
-		this.message = buf;
+		this.message=buf;
 	}
-
-	public void run() {
-		boolean quit = false;
-		boolean TCP = false;
-
-		while (!quit) {
-			if (TCP) {
+	
+	public void run()
+	{
+		boolean quit=false;
+		boolean TCP=false;
+		
+		while(!quit)
+		{
+			if(TCP)
+			{
 				try {
-					TCPSocket.accept();
-					String message = "";
+					Socket socket = TCPSocket.accept();
+					//TCPSocket.accept();
+					in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+					out = new PrintStream(socket.getOutputStream());
+					String message = in.readLine();
 					String response = "error";
-					if (message.substring(0, message.indexOf("$")).equals("setmode")) {
-						String mode = message.substring(message.indexOf("$") + 1);
-						if (mode.equals("T")) {
+					if(message.substring(0, message.indexOf("$")).equals("setmode"))
+					{
+						String mode = message.substring(message.indexOf("$")+1);
+						if(mode.equals("T"))
+						{
 							response = "The communication mode is set to TCP";
-							// TODO
-						} else {
-
+							//TODO
 						}
-					} else if (message.substring(0, message.indexOf("$")).equals("borrow"))
+						else {
+							
+						}
+					}
+					else if(message.substring(0, message.indexOf("$")).equals("borrow"))
 						System.out.println(message);
-					else if (message.substring(0, message.indexOf("$")).equals("return"))
+					else if(message.substring(0, message.indexOf("$")).equals("return"))
 						System.out.println(message);
-					else if (message.substring(0, message.indexOf("$")).equals("list"))
+					else if(message.substring(0, message.indexOf("$")).equals("list"))
 						System.out.println(message);
-					else if (message.substring(0, message.indexOf("$")).equals("exit"))
+					else if(message.substring(0, message.indexOf("$")).equals("exit"))
 						System.out.println(message);
-					else if (message.substring(0, message.indexOf("$")).equals("inventory"))
+					else if(message.substring(0, message.indexOf("$")).equals("inventory"))
 						System.out.println(message);
-
+					
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -80,37 +96,25 @@ public class ClientHandler extends Thread {
 						DatagramPacket sendPacket = new DatagramPacket(buf, buf.length);
 						UDPSocket.send(sendPacket);
 					}
-					else if (message.substring(0, message.indexOf("$")).equals("return")) {
-						String id = message.substring(message.indexOf("$")+1);
-						response = Inv.returnBook(id);
-						byte[] buf = response.getBytes();
-						DatagramPacket sendPacket = new DatagramPacket(buf, buf.length);
-						UDPSocket.send(sendPacket);
-					}
-					else if (message.substring(0, message.indexOf("$")).equals("list"))
-					{
-						String name = message.substring(message.indexOf("$")+1);
-						response = Inv.listBorrowed(name);
-						byte[] buf = response.getBytes();
-						DatagramPacket sendPacket = new DatagramPacket(buf, buf.length);
-						UDPSocket.send(sendPacket);
-					}
-					else if (message.substring(0, message.indexOf("$")).equals("exit"))
-					{
-						response = Inv.listAvailable();
-						byte[] buf = response.getBytes();
-						DatagramPacket sendPacket = new DatagramPacket(buf, buf.length);
-						UDPSocket.send(sendPacket);
-						quit=true;
-					}
-					else if (message.substring(0, message.indexOf("$")).equals("inventory"))
-					{
-						response = Inv.listAvailable();
-						byte[] buf = response.getBytes();
-						DatagramPacket sendPacket = new DatagramPacket(buf, buf.length);
-						UDPSocket.send(sendPacket);
-					}
+					else if(message.substring(0, message.indexOf("$")).equals("borrow"))
+						System.out.println(message);
+					else if(message.substring(0, message.indexOf("$")).equals("return"))
+						System.out.println(message);
+					else if(message.substring(0, message.indexOf("$")).equals("list"))
+						System.out.println(message);
+					else if(message.substring(0, message.indexOf("$")).equals("exit"))
+						System.out.println(message);
+					else if(message.substring(0, message.indexOf("$")).equals("inventory"))
+						System.out.println(message);
+					
+					
+					
+					
+					
+					
+					
 				} catch (IOException e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
