@@ -29,7 +29,8 @@ public class BookClient {
 		Socket socket = null;
 		PrintStream out = null;
 		BufferedReader in = null;
-		FileWriter output = new FileWriter("out_1.txt");
+		FileWriter output = new FileWriter("out_"+clientId+".txt");
+		FileWriter invOutput = new FileWriter("inventory.txt");
 		int recieveSize = 4096;
 		
 		try {
@@ -57,8 +58,6 @@ public class BookClient {
 						} else {
 							try {
 								Tmode = true;
-
-								// output.write("The communication mode is set to TCP");
 								UDPSocket.close();
 								socket = new Socket(hostAddress, tcpPort);
 								out = new PrintStream(socket.getOutputStream());
@@ -108,7 +107,6 @@ public class BookClient {
 				} else if (tokens[0].equals("borrow")) {
 					// TODO: send appropriate command to the server and display the
 					// appropriate responses form the server
-					// String command = tokens[0]+'$'+tokens[1]+'$'+tokens[2]+ " " +tokens[3];
 					String command = "";
 					for (int i = 0; i < tokens.length; i++) {
 						if (i < 2)
@@ -235,6 +233,11 @@ public class BookClient {
 						buf = command.getBytes();
 						sendPacket = new DatagramPacket(buf, buf.length, ia, udpPort);
 						UDPSocket.send(sendPacket);
+		/*				buf = new byte[recieveSize];
+						recievePacket = new DatagramPacket(buf, buf.length);
+						UDPSocket.receive(recievePacket);
+						String response = new String(recievePacket.getData(), 0, recievePacket.getLength());
+						invOutput.write(response);*/
 						UDPSocket.close();
 					}
 
@@ -246,5 +249,6 @@ public class BookClient {
 			e.printStackTrace();
 		}
 		output.close();
+		invOutput.close();
 	}
 }

@@ -15,8 +15,8 @@ public class BookServer {
     udpPort = 8000;
 
     // parse the inventory file
-    Inventory Inv = new Inventory();
-    Inv.parseInventory(fileName);
+//    Inventory Inv = new Inventory();
+//    Inv.parseInventory(fileName);
     //TESTING
 /*    System.out.println(Inv.listAvailable());
     System.out.println("\"The Letter\"");
@@ -32,6 +32,9 @@ public class BookServer {
     
    // ServerSocket ss = new ServerSocket(tcpPort);
   //  byte[] buf = new byte[2048];
+    Inventory Inv = new Inventory();
+    Inv.parseInventory(fileName);
+    System.out.println(Inv.NumBook);
     DatagramSocket defaultSocket = new DatagramSocket(udpPort);
     while (true) {
 	/*	ServerSocket listener = new ServerSocket(tcpPort);

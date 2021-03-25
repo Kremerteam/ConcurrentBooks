@@ -52,8 +52,9 @@ public class Inventory {
 			response="Your request has been approved, "+recordId+" "+name+" "+book;
 			BookID.add(book);
 			NameID.add(name);
+			System.out.println(NumBook.get(InventoryBook.indexOf(book)));
 			NumBook.set(InventoryBook.indexOf(book), NumBook.get(InventoryBook.indexOf(book))-1);
-			
+			System.out.println(NumBook.get(InventoryBook.indexOf(book)));
 			//Keep track of books per student
 			if(StudentBooks.containsKey(name)) {
 				ArrayList<String> books = StudentBooks.get(name);

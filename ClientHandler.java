@@ -1,5 +1,6 @@
 
 import java.io.BufferedReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
@@ -15,8 +16,7 @@ public class ClientHandler extends Thread {
 	BufferedReader in;
 	PrintStream out;
 	int udpPort=8000;
-
-	
+	FileWriter invOutput;
 	public ClientHandler(Inventory Inv, DatagramSocket defaultSocket, DatagramPacket dataPacket, String buf) {
 		UDPSocket = defaultSocket;
 		this.Inv = Inv;
@@ -28,8 +28,14 @@ public class ClientHandler extends Thread {
 		boolean quit = false;
 		boolean TCP = false;
 		boolean first = true;
-		
+
 		while (!quit) {
+			try {
+				invOutput = new FileWriter("inventory.txt");
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			if (TCP) {
 				try {
 					Socket socket = TCPSocket.accept();
@@ -159,9 +165,8 @@ public class ClientHandler extends Thread {
 					else if (message.substring(0, message.indexOf("$")).equals("exit"))
 					{
 						response = Inv.listAvailable();
-						byte[] buf = response.getBytes();
-						DatagramPacket sendPacket = new DatagramPacket(buf,buf.length, dataPacket.getAddress(), dataPacket.getPort());
-						UDPSocket.send(sendPacket);
+						invOutput.write(response);
+						invOutput.close();
 						quit=true;
 					}
 					else if (message.substring(0, message.indexOf("$")).equals("inventory"))
