@@ -45,7 +45,14 @@ public class BookClient {
             // TODO: set the mode of communication for sending commands to the server 
         	  if(tokens[1].equals("T")) {
 				  if (Tmode == true) {
-					  output.write("The communication mode is set to UDP");
+					  out.println(command);
+					  String reply="";
+					  try {
+						  reply = in.readLine();
+					  } catch (IOException e) {
+						  e.printStackTrace();
+					  }
+					  System.out.println(reply);
 				  }else{
 					  try {
 						  Tmode = true;
@@ -54,11 +61,19 @@ public class BookClient {
 						  socket = new Socket(hostAddress, 7000);
 						  out = new PrintStream(socket.getOutputStream());
 						  in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-						  output.write("The communication mode is set to UDP");
+						  out.println(command);
+						  String reply="";
+						  try {
+							  reply = in.readLine();
+							  System.out.println(reply);
+						  } catch (IOException e) {
+							  e.printStackTrace();
+						  }
 					  } catch (Exception e) {
 						  e.printStackTrace();
 
 					  }
+
 				  }
         	  }else if(Tmode==true) {
         		  try {
@@ -71,13 +86,30 @@ public class BookClient {
 					dataPacket = new DatagramPacket(buf,buf.length);
 					sendPacket = new DatagramPacket(buf,buf.length);
 					recievePacket = new DatagramPacket(buf,buf.length);
-
+					//send message
+				    buf = command.getBytes();
+				    sendPacket = new DatagramPacket(buf,buf.length);
+				    UDPSocket.send(dataPacket);
+				    buf = new byte[buf.length];
+				    recievePacket = new DatagramPacket(buf,buf.length);
+				    UDPSocket.receive(recievePacket);
+				    String response = new String(recievePacket.getData(),0,recievePacket.getLength());
+				    System.out.println(response);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
         	  }
-        	  else
-        		  output.write("The communication mode is set to UDP");
+        	  else{
+				  buf = command.getBytes();
+				  sendPacket = new DatagramPacket(buf,buf.length);
+				  UDPSocket.send(dataPacket);
+				  buf = new byte[buf.length];
+				  recievePacket = new DatagramPacket(buf,buf.length);
+				  UDPSocket.receive(recievePacket);
+				  String response = new String(recievePacket.getData(),0,recievePacket.getLength());
+				  System.out.println(response);
+			  }
+
           }
           else if (tokens[0].equals("borrow")) {
             // TODO: send appropriate command to the server and display the
@@ -112,13 +144,13 @@ public class BookClient {
 			  String command = tokens[0]+'$'+tokens[1];
         	  if(Tmode) //TCP
         	  {
-        		  out.println(tokens[0]+tokens[1]);
-        		  String reply="";
-				try {
-					reply = in.readLine();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				  out.println(command);
+				  String reply="";
+				  try {
+					  reply = in.readLine();
+				  } catch (IOException e) {
+					  e.printStackTrace();
+				  }
         		  System.out.println(reply); //OUTPUT FILE*******************************************
         	  }
         	  else { //UDP
@@ -139,14 +171,14 @@ public class BookClient {
 			  String command = tokens[0];
         	  if(Tmode)
         	  {
-        		  out.println(tokens[0]+tokens[1]);
-        		  String reply="";
-				try {
-					reply = in.readLine();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-        		  System.out.println(reply); 
+				  out.println(command);
+				  String reply="";
+				  try {
+					  reply = in.readLine();
+				  } catch (IOException e) {
+					  e.printStackTrace();
+				  }
+				  System.out.println(reply); //OUTPUT FILE*******************************************
         	  }
         	  else {
 				  buf = command.getBytes();
