@@ -1,4 +1,7 @@
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.*;
 
 public class ClientHandler extends Thread {
@@ -8,6 +11,8 @@ public class ClientHandler extends Thread {
 	private DatagramPacket dataPacket;
 	private String message;
 	private ServerSocket TCPSocket;
+	BufferedReader in;
+	PrintStream out;
 
 	public ClientHandler(Inventory Inv, DatagramSocket defaultSocket, DatagramPacket dataPacket, String buf) {
 		UDPSocket = defaultSocket;
@@ -23,27 +28,61 @@ public class ClientHandler extends Thread {
 		while (!quit) {
 			if (TCP) {
 				try {
-					TCPSocket.accept();
-					String message = "";
+
+					Socket socket = TCPSocket.accept();
+					in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+					out = new PrintStream(socket.getOutputStream());
+					String message = in.readLine();
 					String response = "error";
 					if (message.substring(0, message.indexOf("$")).equals("setmode")) {
 						String mode = message.substring(message.indexOf("$") + 1);
 						if (mode.equals("T")) {
 							response = "The communication mode is set to TCP";
+							out.println(response);
+							out.flush();
 							// TODO
 						} else {
-
+							response = "The communication mode is set to UDP";
+							out.println(response);
+							out.flush();
+							socket.close();
+							TCPSocket.close();
+							TCP = false;
 						}
-					} else if (message.substring(0, message.indexOf("$")).equals("borrow"))
-						System.out.println(message);
-					else if (message.substring(0, message.indexOf("$")).equals("return"))
-						System.out.println(message);
-					else if (message.substring(0, message.indexOf("$")).equals("list"))
-						System.out.println(message);
-					else if (message.substring(0, message.indexOf("$")).equals("exit"))
-						System.out.println(message);
-					else if (message.substring(0, message.indexOf("$")).equals("inventory"))
-						System.out.println(message);
+					} else if (message.substring(0, message.indexOf("$")).equals("borrow")){
+						String name = message.substring(message.indexOf("$")+1, message.lastIndexOf("$"));
+						String book = message.substring(message.lastIndexOf("$")+1);
+						response = Inv.borrowBook(name, book);
+						out.println(response);
+						out.flush();
+					}
+					else if (message.substring(0, message.indexOf("$")).equals("return")){
+						String id = message.substring(message.indexOf("$")+1);
+						response = Inv.returnBook(id);
+						out.println(response);
+						out.flush();
+					}
+
+					else if (message.substring(0, message.indexOf("$")).equals("list")){
+						String name = message.substring(message.indexOf("$")+1);
+						response = Inv.listBorrowed(name);
+						out.println(response);
+						out.flush();
+					}
+
+					else if (message.substring(0, message.indexOf("$")).equals("exit")){
+						response = Inv.listAvailable();
+						out.println(response);
+						out.flush();
+						quit = true;
+					}
+
+					else if (message.substring(0, message.indexOf("$")).equals("inventory")){
+						response = Inv.listAvailable();
+						out.println(response);
+						out.flush();
+					}
+
 
 				} catch (IOException e) {
 					e.printStackTrace();
