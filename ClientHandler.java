@@ -4,8 +4,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.net.*;
-import java.net.InetAddress;
 public class ClientHandler extends Thread {
 
 	private DatagramSocket UDPSocket;
@@ -14,7 +14,7 @@ public class ClientHandler extends Thread {
 	private String buffer;
 	private ServerSocket TCPSocket;
 	BufferedReader in;
-	PrintStream out;
+	PrintWriter out;
 	int udpPort=8000;
 	Socket socket;
 	FileWriter invOutput;
@@ -42,8 +42,9 @@ public class ClientHandler extends Thread {
 				try {
 					//socket = TCPSocket.accept();
 					in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-					out = new PrintStream(socket.getOutputStream());
+					out = new PrintWriter(socket.getOutputStream());
 					String message = in.readLine();
+					System.out.println(message);
 					String response = "error";
 					if (message.substring(0, message.indexOf("$")).equals("setmode")) {
 						String mode = message.substring(message.indexOf("$") + 1);
@@ -57,7 +58,8 @@ public class ClientHandler extends Thread {
 							out.println(response);
 							out.flush();
 							socket.close();
-							TCPSocket.close();
+						//	TCPSocket.close();
+							//UDPSocket = new DatagramSocket(udpPort);
 							TCP = false;
 						}
 					} else if (message.substring(0, message.indexOf("$")).equals("borrow")){
@@ -83,14 +85,16 @@ public class ClientHandler extends Thread {
 
 					else if (message.substring(0, message.indexOf("$")).equals("exit")){
 						response = Inv.listAvailable();
-						out.println(response);
-						out.flush();
+						invOutput.write(response);
+						invOutput.close();
 						quit = true;
 					}
 
 					else if (message.substring(0, message.indexOf("$")).equals("inventory")){
 						response = Inv.listAvailable();
-						out.println(response);
+						System.out.println(response);
+						out.write(response.toCharArray());
+						//out.println(response);
 						out.flush();
 					}
 
@@ -124,12 +128,9 @@ public class ClientHandler extends Thread {
 						if (mode.equals("T")) {
 							response = "The communication mode is set to TCP";
 							byte[] buf = response.getBytes();
-							buf = new byte[1024];
-							//dataPacket = new DatagramPacket(buf, buf.length);
 							DatagramPacket sendPacket = new DatagramPacket(buf, buf.length, dataPacket.getAddress(), dataPacket.getPort());
 							UDPSocket.send(sendPacket);
 							//UDPSocket.close();
-							//TCPSocket = new ServerSocket(7000);
 							socket = TCPSocket.accept();
 							TCP = true;
 						} else {

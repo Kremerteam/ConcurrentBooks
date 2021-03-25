@@ -37,16 +37,6 @@ public class BookServer {
     DatagramSocket defaultSocket = new DatagramSocket(udpPort);
     ServerSocket TCPSocket = new ServerSocket(7000);
     while (true) {
-	/*	ServerSocket listener = new ServerSocket(tcpPort);
-		Socket s;
-		Socket test = new Socket();
-		test.connect(null, udpPort);
-		while ( (s = listener.accept()) != null) {
-		//	Thread t = new ServerThread(ns.table, s);
-		//	t.start();
-		}
-		System.out.println("got a tcp connection");
-	*/	
     	byte[] buf = new byte[2048];
 		DatagramPacket dataPacket = new DatagramPacket(buf,buf.length);
 		defaultSocket.receive(dataPacket);
